@@ -5,7 +5,17 @@
 이 프로젝트는 카메라로 얼굴을 인식하여 드래곤볼 스카우터처럼 전투력을 측정해 시각화하는 앱이다.
 얼굴 인식은 ML Kit을 활용하고, 전투력 측정 로직 및 상태 관리는 Clean Architecture 기반의 여러 모듈로 나누어 구현한다.
 
+<table>
+  <tbody>
+    <tr><td>측정중</td><td>측정완료</td></tr>
+    <tr>
+      <td><img width="1000" height="600" alt="scouter1" src="https://github.com/user-attachments/assets/2fe60b14-f91d-4e40-98ae-9373618c44ac" /></td>
+      <td><img width="1000" height="600" alt="scouter2" src="https://github.com/user-attachments/assets/7ca8d175-0e70-4c05-8e80-97d4e037f095" /></td>
+    </tr>
+  </tbody>
+</table>
 ## ✨ 주요 기능
+
 ### 🔍 얼굴 인식 (ML Kit Face Detection)
 - CameraX ImageAnalysis 를 통해 실시간 프레임을 받고
 - ML Kit FaceDetection 으로 얼굴 boundingBox + 표정 확률 등을 분석
