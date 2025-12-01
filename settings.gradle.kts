@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "CScouter"
 include(":app")
- 
+include(":core:model")
+include(":core:logic")
+include(":core:ml")

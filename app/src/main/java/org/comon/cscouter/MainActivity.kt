@@ -16,8 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import org.comon.cscouter.camera.CameraWithScouterOverlay
+import org.comon.cscouter.ml.MlKitFaceDetector
+import org.comon.cscouter.ui.screen.CameraScouterScreen
 import org.comon.cscouter.ui.theme.CScouterTheme
+import org.comon.logic.PowerCalculator
+import org.comon.logic.PowerMeasurementStateMachine
 
 class MainActivity : ComponentActivity() {
 
@@ -29,7 +32,9 @@ class MainActivity : ComponentActivity() {
 
     private val cameraPermissionGranted = mutableStateOf(false)
 
-
+    private val powerCalculator = PowerCalculator()
+    private val stateMachine = PowerMeasurementStateMachine()
+    private val faceDetector by lazy { MlKitFaceDetector(powerCalculator) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +59,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (cameraPermissionGranted.value) {
-                        CameraWithScouterOverlay()
+                        CameraScouterScreen(
+                            faceDetector = faceDetector,
+                            stateMachine = stateMachine
+                        )
                     } else {
                         Box(
                             modifier = Modifier.fillMaxSize(),
