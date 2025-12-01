@@ -30,7 +30,7 @@ fun CameraScouterScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var measurementState by remember {
-        mutableStateOf<PowerMeasurementState>(PowerMeasurementState.Idle)
+        mutableStateOf(PowerMeasurementState())
     }
     var imageWidth by remember { mutableStateOf(0) }
     var imageHeight by remember { mutableStateOf(0) }

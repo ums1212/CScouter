@@ -12,33 +12,39 @@
       <td><img width="1000" height="600" alt="scouter1" src="https://github.com/user-attachments/assets/2fe60b14-f91d-4e40-98ae-9373618c44ac" /></td>
       <td><img width="1000" height="600" alt="scouter2" src="https://github.com/user-attachments/assets/7ca8d175-0e70-4c05-8e80-97d4e037f095" /></td>
     </tr>
+    <tr><td colspan="2">다중 얼굴 인식</td></tr>
+    <tr><td colspan="2"><img width="1000" height="600" alt="scouter3" src="https://github.com/user-attachments/assets/1b662346-a041-4a11-bb48-d2a3bcac0de0" /></td></tr>
   </tbody>
 </table>
+
 ## ✨ 주요 기능
 
 ### 🔍 얼굴 인식 (ML Kit Face Detection)
 - CameraX ImageAnalysis 를 통해 실시간 프레임을 받고
 - ML Kit FaceDetection 으로 얼굴 boundingBox + 표정 확률 등을 분석
 - trackingId 사용 → 동일 얼굴 식별
+- **다중 얼굴 인식 지원: 화면에 있는 모든 얼굴을 개별적으로 인식 및 추적**
 
 ### 🔥 전투력 측정 알고리즘
 - 얼굴 크기, 스마일 확률, 눈 떠있는 정도 등을 조합하여 전투력 계산
 - 3초 동안 측정한 전투력의 평균값 표시
+- **각 얼굴별 독립적인 측정 진행**
 
 ### 🎛 실시간 UI 오버레이 (Jetpack Compose Canvas)
 - Measuring 상태 → 얼굴 위치에서 정사각형 회전 애니메이션
 - Done 상태 → 얼굴 boundingBox 영역에 전투력 표시 박스 + 텍스트
 - FILL_CENTER 기반 PreviewView scaling 적용
   → ML Kit boundingBox를 화면 좌표로 정확히 매핑
+- **여러 얼굴에 대해 동시에 오버레이 표시**
 
 ### 🧠 상태 관리(PowerMeasurementStateMachine)
-- Idle → Measuring → Done 전환 관리
-- 얼굴 사라질 경우 Measuring → Idle
-- Done 상태는 일정 시간 유지 후 Idle
+- Idle → Measuring → Done 전환 관리 (각 얼굴별 독립적)
+- 얼굴 사라질 경우 해당 얼굴의 측정 상태 제거 (Measuring/Done 모두)
+- 화면에 남아있는 얼굴은 계속 측정 진행
 
 ### 🧩 모듈 구조 (Clean Architecture)
 ```
-:core:model      ← 순수 Kotlin 데이터 모델(FaceRect, FrameData 등)
+:core:model      ← 순수 Kotlin 데이터 모델(FaceRect, FrameData, FaceMeasurementState 등)
 :core:logic      ← 전투력 계산/상태 머신 등 비즈니스 로직
 :core:ml         ← ML Kit 얼굴 분석 로직 (FaceDetector 인터페이스 구현)
 :app:mobile      ← CameraX/Compose UI/Overlay/DI
@@ -88,18 +94,18 @@ ML Kit이 반환한 `boundingBox` 를 `FaceRect` 로 변환 후
 
 ### 3. 상태 관리(PowerMeasurementStateMachine)
 #### 상태 정의
+`PowerMeasurementState`는 이제 `Map<Int, FaceMeasurementState>`를 보유하며, 각 얼굴의 상태를 관리한다.
 
-- Idle
-- Measuring(faceId, boundingBox, startTime, values)
-- Done(faceId, boundingBox, averagedPower)
+- `FaceMeasurementState.Idle`
+- `FaceMeasurementState.Measuring(faceId, boundingBox, startTime, values)`
+- `FaceMeasurementState.Done(faceId, boundingBox, averagedPower)`
 
 #### 전환 규칙
+- 각 얼굴(trackingId)별로 독립적인 상태 머신 동작
 - 첫 얼굴 감지 → Measuring 시작
 - 동일 trackingId 유지 → 전투력 누적
 - 3초 경과 → Done
-- 얼굴 사라짐
-  - Measuring → Idle
-  - Done → Done 유지 (얼굴 없어도 결과 유지)
+- 얼굴 사라짐 → 상태 맵에서 제거 (측정 중단)
 
 ### 4. 얼굴 오버레이 (Jetpack Compose Canvas)
 #### FILL_CENTER 스케일링 구조 해결
