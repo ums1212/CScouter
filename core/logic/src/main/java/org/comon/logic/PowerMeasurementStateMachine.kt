@@ -5,7 +5,8 @@ import org.comon.model.FaceMeasurementState
 import org.comon.model.PowerMeasurementState
 
 class PowerMeasurementStateMachine(
-    private val measuringDurationMs: Long = 3_000L
+    private val measuringDurationMs: Long = 3_000L,
+    private val gracePeriodMs: Long = 500L
 ) {
 
     /**
@@ -21,11 +22,32 @@ class PowerMeasurementStateMachine(
         now: Long
     ): PowerMeasurementState {
         val nextFaces = mutableMapOf<Int, FaceMeasurementState>()
+        val detectedFaceIds = faces.map { it.id }.toSet()
 
+        // 1. 현재 감지된 얼굴 업데이트
         for (face in faces) {
             val prevState = prev.faces[face.id] ?: FaceMeasurementState.Idle
             val nextState = calculateNextState(prevState, face, now)
             nextFaces[face.id] = nextState
+        }
+
+        // 2. 감지되지 않은 얼굴 중 유예 기간 내에 있는 얼굴 유지
+        prev.faces.forEach { (id, state) ->
+            if (id !in detectedFaceIds) {
+                when (state) {
+                    is FaceMeasurementState.Measuring -> {
+                        if (now - state.lastSeenTime < gracePeriodMs) {
+                            nextFaces[id] = state
+                        }
+                    }
+                    is FaceMeasurementState.Done -> {
+                        if (now - state.lastSeenTime < gracePeriodMs) {
+                            nextFaces[id] = state
+                        }
+                    }
+                    else -> {}
+                }
+            }
         }
 
         return PowerMeasurementState(faces = nextFaces)
@@ -42,7 +64,8 @@ class PowerMeasurementStateMachine(
                     faceId = face.id,
                     startTimeMillis = now,
                     samples = listOf(face.powerLevel),
-                    boundingBox = face.boundingBox
+                    boundingBox = face.boundingBox,
+                    lastSeenTime = now
                 )
             }
             is FaceMeasurementState.Measuring -> {
@@ -56,20 +79,23 @@ class PowerMeasurementStateMachine(
                     FaceMeasurementState.Done(
                         faceId = face.id,
                         averagedPower = avgPower,
-                        boundingBox = face.boundingBox
+                        boundingBox = face.boundingBox,
+                        lastSeenTime = now
                     )
                 } else {
                     // 측정 중 업데이트
                     prev.copy(
                         samples = newSamples,
-                        boundingBox = face.boundingBox
+                        boundingBox = face.boundingBox,
+                        lastSeenTime = now
                     )
                 }
             }
             is FaceMeasurementState.Done -> {
                 // 이미 완료된 얼굴은 위치만 업데이트
                 prev.copy(
-                    boundingBox = face.boundingBox
+                    boundingBox = face.boundingBox,
+                    lastSeenTime = now
                 )
             }
         }

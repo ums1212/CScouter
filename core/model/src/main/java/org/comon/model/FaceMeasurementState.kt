@@ -7,12 +7,14 @@ sealed class FaceMeasurementState {
         val faceId: Int,
         val startTimeMillis: Long,
         val samples: List<Int>,
-        val boundingBox: FaceRect
+        val boundingBox: FaceRect,
+        val lastSeenTime: Long
     ) : FaceMeasurementState()
 
     data class Done(
         val faceId: Int,
         val averagedPower: Int,
-        val boundingBox: FaceRect
+        val boundingBox: FaceRect,
+        val lastSeenTime: Long
     ) : FaceMeasurementState()
 }

@@ -16,8 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.rememberNavController
 import org.comon.cscouter.ml.MlKitFaceDetector
-import org.comon.cscouter.ui.screen.CameraScouterScreen
+import org.comon.cscouter.ui.navigation.CScouterNavGraph
 import org.comon.cscouter.ui.theme.CScouterTheme
 import org.comon.logic.PowerCalculator
 import org.comon.logic.PowerMeasurementStateMachine
@@ -59,7 +60,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (cameraPermissionGranted.value) {
-                        CameraScouterScreen(
+                        val navController = rememberNavController()
+
+                        CScouterNavGraph(
+                            navController = navController,
                             faceDetector = faceDetector,
                             stateMachine = stateMachine
                         )
@@ -72,7 +76,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
             }
         }
     }

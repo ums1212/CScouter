@@ -13,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -25,23 +27,33 @@ import org.comon.model.PowerMeasurementState
 @Composable
 fun CameraScouterScreen(
     faceDetector: FaceDetector,
-    stateMachine: PowerMeasurementStateMachine
+    stateMachine: PowerMeasurementStateMachine,
+    onNavigateToResult: (Int, String) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
 
     var measurementState by remember {
         mutableStateOf(PowerMeasurementState())
     }
     var imageWidth by remember { mutableStateOf(0) }
     var imageHeight by remember { mutableStateOf(0) }
+    
+    // PreviewView 참조를 저장하기 위한 변수
+    var previewView: PreviewView? by remember { mutableStateOf(null) }
+    
+    // 중복 클릭 방지를 위한 시간 기록
+    var lastClickTime by remember { mutableStateOf(0L) }
 
     Box(Modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
-                val previewView = PreviewView(ctx).apply {
+                val view = PreviewView(ctx).apply {
                     scaleType = PreviewView.ScaleType.FILL_CENTER
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
                 }
+                previewView = view
 
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
                 cameraProviderFuture.addListener({
@@ -49,7 +61,7 @@ fun CameraScouterScreen(
 
                     val preview = Preview.Builder()
                         .build()
-                        .also { it.surfaceProvider = previewView.surfaceProvider }
+                        .also { it.surfaceProvider = view.surfaceProvider }
 
                     val analysis = ImageAnalysis.Builder()
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -79,7 +91,7 @@ fun CameraScouterScreen(
                     )
                 }, ContextCompat.getMainExecutor(ctx))
 
-                previewView
+                view
             }
         )
 
@@ -87,6 +99,72 @@ fun CameraScouterScreen(
             measurementState = measurementState,
             imageWidth = imageWidth,
             imageHeight = imageHeight,
+            onFaceTap = { faceState ->
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastClickTime < 1000L) {
+                    android.util.Log.d("CameraScouterScreen", "Click ignored due to debounce")
+                    return@FacesOverlay
+                }
+                lastClickTime = currentTime
+
+                android.util.Log.d("CameraScouterScreen", "onFaceTap called with state: $faceState")
+                val currentPreview = previewView
+                if (currentPreview == null) {
+                    android.util.Log.e("CameraScouterScreen", "previewView is null")
+                    return@FacesOverlay
+                }
+                val bitmap = currentPreview.bitmap
+                if (bitmap == null) {
+                    android.util.Log.e("CameraScouterScreen", "previewView.bitmap is null")
+                    return@FacesOverlay
+                }
+                
+                // 비트맵 크롭 로직
+                // PreviewView의 비트맵은 화면에 보이는 그대로임 (View 크기)
+                // 따라서 FacesOverlay에서 계산한 화면 좌표를 그대로 사용 가능
+                
+                val screenWidth = currentPreview.width
+                val screenHeight = currentPreview.height
+                
+                if (imageWidth == 0 || imageHeight == 0) {
+                    android.util.Log.e("CameraScouterScreen", "imageWidth or imageHeight is 0")
+                    return@FacesOverlay
+                }
+
+                val scale = kotlin.math.max(screenWidth.toFloat() / imageWidth, screenHeight.toFloat() / imageHeight)
+                val offsetX = (screenWidth - imageWidth * scale) / 2f
+                val offsetY = (screenHeight - imageHeight * scale) / 2f
+                
+                val box = faceState.boundingBox
+                val left = (box.left * scale + offsetX).toInt().coerceAtLeast(0)
+                val top = (box.top * scale + offsetY).toInt().coerceAtLeast(0)
+                val right = (box.right * scale + offsetX).toInt().coerceAtMost(screenWidth)
+                val bottom = (box.bottom * scale + offsetY).toInt().coerceAtMost(screenHeight)
+                
+                val width = right - left
+                val height = bottom - top
+                
+                android.util.Log.d("CameraScouterScreen", "Crop rect: $left, $top, $width, $height")
+
+                if (width > 0 && height > 0) {
+                    val croppedBitmap = android.graphics.Bitmap.createBitmap(bitmap, left, top, width, height)
+                    
+                    // 파일로 저장
+                    val file = java.io.File(context.cacheDir, "cropped_face_${System.currentTimeMillis()}.jpg")
+                    try {
+                        java.io.FileOutputStream(file).use { out ->
+                            croppedBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 100, out)
+                        }
+                        android.util.Log.d("CameraScouterScreen", "Navigating to result: ${file.absolutePath}")
+                        onNavigateToResult(faceState.averagedPower, Uri.fromFile(file).toString())
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        android.util.Log.e("CameraScouterScreen", "Error saving bitmap", e)
+                    }
+                } else {
+                    android.util.Log.e("CameraScouterScreen", "Invalid crop width/height")
+                }
+            },
             modifier = Modifier.fillMaxSize()
         )
     }
