@@ -1,5 +1,7 @@
 package org.comon.cscouter.logic
 
+import android.util.Log
+
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -30,6 +32,7 @@ class FaceAnalysisAnalyzer(
         }
 
         val rotation = imageProxy.imageInfo.rotationDegrees
+        Log.d("FaceAnalysisAnalyzer", "analyze: rotation=$rotation, width=$mediaImage.width, height=$mediaImage.height")
 
         val sensorWidth = mediaImage.width
         val sensorHeight = mediaImage.height

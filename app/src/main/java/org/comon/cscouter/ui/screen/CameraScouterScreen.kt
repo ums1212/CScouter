@@ -82,13 +82,44 @@ fun CameraScouterScreen(
                             )
                         }
 
+                    fun updateRotation() {
+                        val display = view.display ?: return
+                        val rotation = display.rotation
+                        preview.targetRotation = rotation
+                        analysis.targetRotation = rotation
+                    }
+
+                    // 초기 바인딩
                     cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        CameraSelector.DEFAULT_BACK_CAMERA,
-                        preview,
-                        analysis
-                    )
+                    try {
+                        cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            CameraSelector.DEFAULT_BACK_CAMERA,
+                            preview,
+                            analysis
+                        )
+                        updateRotation()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    // 화면 회전 감지
+                    val orientationEventListener = object : android.view.OrientationEventListener(ctx) {
+                        override fun onOrientationChanged(orientation: Int) {
+                             // 회전 변경 시 targetRotation 업데이트 (너무 빈번한 호출 방지 로직은 CameraX 내부적으로 최적화됨)
+                             // 다만 View의 display.rotation이 변경되었을 때만 호출하는 것이 좋음
+                             val display = view.display
+                             if (display != null) {
+                                  val rotation = display.rotation
+                                  if (preview.targetRotation != rotation) {
+                                      preview.targetRotation = rotation
+                                      analysis.targetRotation = rotation
+                                  }
+                             }
+                        }
+                    }
+                    orientationEventListener.enable()
+
                 }, ContextCompat.getMainExecutor(ctx))
 
                 view
