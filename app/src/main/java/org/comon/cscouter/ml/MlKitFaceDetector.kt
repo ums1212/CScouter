@@ -43,7 +43,16 @@ class MlKitFaceDetector(
                 .addOnSuccessListener { cont.resume(it) }
                 .addOnFailureListener { cont.resumeWithException(it) }
         }
-        return faces.mapIndexed { index, face ->
+        // 1. 얼굴 크기(면적) 순으로 내림차순 정렬
+        val sortedFaces = faces.sortedByDescending { face ->
+            val box = face.boundingBox
+            (box.width() * box.height())
+        }
+
+        // 2. 상위 10개만 선택
+        val top10Faces = sortedFaces.take(10)
+
+        return top10Faces.mapIndexed { index, face ->
             val box = face.boundingBox
 
             val faceRect = FaceRect(
