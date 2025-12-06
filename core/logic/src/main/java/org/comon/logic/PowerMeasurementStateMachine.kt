@@ -5,7 +5,7 @@ import org.comon.model.FaceMeasurementState
 import org.comon.model.PowerMeasurementState
 
 class PowerMeasurementStateMachine(
-    private val measuringDurationMs: Long = 3_000L,
+    private val measuringDurationMs: Long = 2_000L,
     private val gracePeriodMs: Long = 500L
 ) {
 
