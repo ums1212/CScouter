@@ -14,11 +14,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import android.net.Uri
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.comon.cscouter.ui.component.FacesOverlay
+import org.comon.cscouter.ui.component.HelpDialog
+import org.comon.cscouter.util.DataStoreManager
 import org.comon.cscouter.logic.FaceAnalysisAnalyzer
 import org.comon.logic.PowerMeasurementStateMachine
 import org.comon.ml.FaceDetector
@@ -39,6 +51,19 @@ fun CameraScouterScreen(
     var imageWidth by remember { mutableStateOf(0) }
     var imageHeight by remember { mutableStateOf(0) }
     
+    // DataStore & Help Dialog State
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val isFirstLaunch by dataStoreManager.isFirstLaunch.collectAsState(initial = false)
+    var showHelpDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // 첫 실행 시 자동으로 도움말 표시
+    androidx.compose.runtime.LaunchedEffect(isFirstLaunch) {
+        if (isFirstLaunch) {
+            showHelpDialog = true
+        }
+    }
+
     // PreviewView 참조를 저장하기 위한 변수
     var previewView: PreviewView? by remember { mutableStateOf(null) }
     
@@ -198,5 +223,36 @@ fun CameraScouterScreen(
             },
             modifier = Modifier.fillMaxSize()
         )
+
+        // 도움말 아이콘
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = androidx.compose.ui.Alignment.TopEnd
+        ) {
+            IconButton(
+                onClick = { showHelpDialog = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = "Help",
+                    tint = MaterialTheme.colorScheme.primaryContainer.copy(alpha=0.8f) // 잘 보이게 색상 조정
+                )
+            }
+        }
+
+        if (showHelpDialog) {
+            HelpDialog(
+                onDismissRequest = {
+                    showHelpDialog = false
+                    if (isFirstLaunch) {
+                        scope.launch {
+                            dataStoreManager.setFirstLaunch(false)
+                        }
+                    }
+                }
+            )
+        }
     }
 }
