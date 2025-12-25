@@ -7,7 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.comon.cscouter.ui.screen.CameraScouterScreen
+import org.comon.cscouter.ui.screen.PermissionScreen
 import org.comon.cscouter.ui.screen.ResultScreen
+import org.comon.cscouter.ui.screen.TitleScreen
 import org.comon.logic.PowerMeasurementStateMachine
 import org.comon.ml.FaceDetector
 
@@ -15,12 +17,40 @@ import org.comon.ml.FaceDetector
 fun CScouterNavGraph(
     navController: NavHostController,
     faceDetector: FaceDetector,
-    stateMachine: PowerMeasurementStateMachine
+    stateMachine: PowerMeasurementStateMachine,
+    isCameraPermissionGranted: Boolean,
+    onRequestPermission: () -> Unit
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Camera.route
+        startDestination = Screen.Title.route
     ) {
+        composable(Screen.Title.route) {
+            TitleScreen(
+                isPermissionGranted = isCameraPermissionGranted,
+                onNext = { granted ->
+                    if (granted) {
+                        navController.navigate(Screen.Camera.route)
+                    } else {
+                        navController.navigate(Screen.Permission.route)
+                    }
+                }
+            )
+        }
+
+        composable(Screen.Permission.route) {
+            PermissionScreen(
+                isPermissionGranted = isCameraPermissionGranted,
+                onRequestPermission = onRequestPermission,
+                onNext = {
+                    navController.navigate(Screen.Camera.route) {
+                        // 권한 허용 후 이동 시 스택에서 권한 화면 제거
+                        popUpTo(Screen.Permission.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Camera.route) {
             CameraScouterScreen(
                 faceDetector = faceDetector,

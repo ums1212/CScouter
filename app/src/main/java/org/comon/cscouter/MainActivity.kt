@@ -59,22 +59,17 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (cameraPermissionGranted.value) {
-                        val navController = rememberNavController()
+                    val navController = rememberNavController()
 
-                        CScouterNavGraph(
-                            navController = navController,
-                            faceDetector = faceDetector,
-                            stateMachine = stateMachine
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("카메라 권한이 필요합니다.")
+                    CScouterNavGraph(
+                        navController = navController,
+                        faceDetector = faceDetector,
+                        stateMachine = stateMachine,
+                        isCameraPermissionGranted = cameraPermissionGranted.value,
+                        onRequestPermission = {
+                            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
                         }
-                    }
+                    )
                 }
             }
         }

@@ -42,6 +42,11 @@
 - 얼굴 사라질 경우 해당 얼굴의 측정 상태 제거 (Measuring/Done 모두)
 - 화면에 남아있는 얼굴은 계속 측정 진행
 
+### 🎬 앱 시작 및 권한 흐름
+- **타이틀 화면 (Title Screen)**: 가로/세로 화면 회전에 대응하는 타이틀 이미지 표시
+- **권한 안내 화면 (Permission Screen)**: 카메라 권한이 없을 경우 시각적 안내 이미지와 함께 권한 요청 기능 제공
+- **부드러운 화면 전환**: 권한 허용 시 자동으로 카메라 화면으로 즉시 전환
+
 ### 🧩 모듈 구조 (Clean Architecture)
 ```
 :core:model      ← 순수 Kotlin 데이터 모델(FaceRect, FrameData, FaceMeasurementState 등)
@@ -145,10 +150,15 @@ drawText("전투력 ${power}", left, top - 20)
 
 ## 🧪 동작 흐름 요약
 ```
-CameraX → ImageProxy → FrameData → ML Kit 분석
-→ DetectedFaceInfo → StateMachine.update()
-→ PowerMeasurementState → Compose Overlay 렌더링
+Title Screen → (카메라 권한 체크) → Camera Screen → Result Screen
+                    ↓ (권한 없음)
+             Permission Screen
 ```
+
+1. **Title Screen**: 앱 시작 시 로고/타이틀 표시 (가로/세로 대응)
+2. **Permission Screen**: 카메라 권한 필요성 안내 및 요청
+3. **Camera Screen**: CameraX → ImageProxy → FrameData → ML Kit 분석 → StateMachine.update() → Compose Overlay 렌더링
+4. **Result Screen**: 얼굴 터치 시 크롭 이미지 및 측정 결과 표시
 
 ## 🚨 문제 해결 과정 & 주요 버그 해결 내역
 ### ✔ 얼굴 없이도 오버레이가 표시됨
