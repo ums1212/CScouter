@@ -56,7 +56,6 @@ class MainActivity : ComponentActivity() {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
 
-
         setContent {
             CScouterTheme {
                 Surface(
@@ -90,5 +89,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 앱으로 돌아왔을 때 권한 상태 재확인
+        cameraPermissionGranted.value = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }
