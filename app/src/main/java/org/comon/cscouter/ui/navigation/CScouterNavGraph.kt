@@ -30,7 +30,9 @@ fun CScouterNavGraph(
                 isPermissionGranted = isCameraPermissionGranted,
                 onNext = { granted ->
                     if (granted) {
-                        navController.navigate(Screen.Camera.route)
+                        navController.navigate(Screen.Camera.route) {
+                            popUpTo(Screen.Title.route) { inclusive = true }
+                        }
                     } else {
                         navController.navigate(Screen.Permission.route)
                     }

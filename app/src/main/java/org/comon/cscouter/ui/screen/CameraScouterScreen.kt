@@ -14,19 +14,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 import org.comon.cscouter.ui.component.FacesOverlay
 import org.comon.cscouter.ui.component.HelpDialog
@@ -56,6 +61,38 @@ fun CameraScouterScreen(
     val isFirstLaunch by dataStoreManager.isFirstLaunch.collectAsState(initial = false)
     var showHelpDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    
+    // 앱 종료 다이얼로그 상태
+    var showExitDialog by remember { mutableStateOf(false) }
+    
+    // 뒤로 가기 버튼 처리
+    BackHandler {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("앱 종료") },
+            text = { Text("앱을 종료하시겠습니까?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        (context as? ComponentActivity)?.finish()
+                    }
+                ) {
+                    Text("종료")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showExitDialog = false }
+                ) {
+                    Text("취소")
+                }
+            }
+        )
+    }
 
     // 첫 실행 시 자동으로 도움말 표시
     androidx.compose.runtime.LaunchedEffect(isFirstLaunch) {
