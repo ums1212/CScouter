@@ -12,11 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
+import org.comon.cscouter.R
+import kotlinx.coroutines.launch
 import android.content.res.Configuration
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,20 +37,21 @@ fun HelpDialog(
 ) {
     val pages = listOf(
         HelpPageContent(
-            title = "CScouter 소개",
-            description = "CScouter는 상대방의 전투력을 측정하는 앱입니다."
+            title = stringResource(R.string.help_intro_title),
+            description = stringResource(R.string.help_intro_desc)
         ),
         HelpPageContent(
-            title = "사용 방법",
-            description = "카메라를 얼굴에 비추면 나이, 표정 등을 분석하여 전투력을 계산합니다."
+            title = stringResource(R.string.help_usage_title),
+            description = stringResource(R.string.help_usage_desc)
         ),
         HelpPageContent(
-            title = "공유하기",
-            description = "친구들과 전투력을 공유하고 대결해보세요."
+            title = stringResource(R.string.help_share_title),
+            description = stringResource(R.string.help_share_desc)
         )
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
+    val coroutineScope = rememberCoroutineScope()
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -141,10 +146,23 @@ fun HelpDialog(
                             Spacer(modifier = Modifier.height(16.dp))
                             
                             Button(
-                                onClick = onDismissRequest,
+                                onClick = {
+                                    if (pagerState.currentPage < pages.size - 1) {
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                        }
+                                    } else {
+                                        onDismissRequest()
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("확인")
+                                Text(
+                                    if (pagerState.currentPage < pages.size - 1) 
+                                        stringResource(R.string.next) 
+                                    else 
+                                        stringResource(R.string.confirm)
+                                )
                             }
                         }
                     }
@@ -210,10 +228,23 @@ fun HelpDialog(
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     Button(
-                        onClick = onDismissRequest,
+                        onClick = {
+                            if (pagerState.currentPage < pages.size - 1) {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            } else {
+                                onDismissRequest()
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("확인")
+                        Text(
+                            if (pagerState.currentPage < pages.size - 1) 
+                                stringResource(R.string.next) 
+                            else 
+                                stringResource(R.string.confirm)
+                        )
                     }
                 }
             }

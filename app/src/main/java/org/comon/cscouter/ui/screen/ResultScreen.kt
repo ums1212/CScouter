@@ -18,17 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import android.graphics.BitmapFactory
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.ImageBitmap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.comon.cscouter.ui.component.PowerValueText
-import org.comon.cscouter.ui.component.ResultButtonRow
-import org.comon.cscouter.ui.component.ResultTitle
+import androidx.compose.ui.res.stringResource
+import org.comon.cscouter.R
 import java.io.File
 import androidx.core.net.toUri
 import androidx.core.graphics.createBitmap
@@ -90,7 +81,7 @@ fun ResultScreen(
                     if (imageBitmap.value != null) {
                         Image(
                             bitmap = imageBitmap.value!!,
-                            contentDescription = "Measured Face",
+                            contentDescription = stringResource(R.string.measured_face_desc),
                             modifier = Modifier
                                 .size(280.dp) // 가로 모드에서 좀 더 크게
                                 .clip(RoundedCornerShape(16.dp)),
@@ -137,7 +128,7 @@ fun ResultScreen(
                 if (imageBitmap.value != null) {
                     Image(
                         bitmap = imageBitmap.value!!,
-                        contentDescription = "Measured Face",
+                        contentDescription = stringResource(R.string.measured_face_desc),
                         modifier = Modifier
                             .size(200.dp)
                             .clip(RoundedCornerShape(16.dp)),
@@ -187,7 +178,7 @@ private fun shareResult(context: android.content.Context) {
                 putExtra(Intent.EXTRA_STREAM, contentUri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            context.startActivity(Intent.createChooser(shareIntent, "전투력 공유하기"))
+            context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_result_title)))
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">CScouter</string>
+    <string name="next">다음</string>
+    <string name="confirm">확인</string>
+
+    <!-- Help Dialog -->
+    <string name="help_intro_title">CScouter 소개</string>
+    <string name="help_intro_desc">CScouter는 상대방의 전투력을 측정하는 앱입니다.</string>
+    <string name="help_usage_title">사용 방법</string>
+    <string name="help_usage_desc">카메라를 얼굴에 비추면 나이, 표정 등을 분석하여 전투력을 계산합니다.</string>
+    <string name="help_share_title">공유하기</string>
+    <string name="help_share_desc">친구들과 전투력을 공유하고 대결해보세요.</string>
+
+    <!-- Result Components -->
+    <string name="result_title">다음 인물의 전투력은?</string>
+    <string name="power_label">전투력</string>
+    <string name="retry">다시하기</string>
+    <string name="share">공유하기</string>
+
+    <!-- Camera Scouter Screen -->
+    <string name="exit_app_title">앱 종료</string>
+    <string name="exit_app_desc">앱을 종료하시겠습니까?</string>
+    <string name="exit">종료</string>
+    <string name="cancel">취소</string>
+    <string name="help_icon_desc">도움말</string>
+
+    <!-- Permission Screen -->
+    <string name="permission_title">카메라 권한이 필요합니다</string>
+    <string name="permission_desc">전투력을 측정하기 위해서는 카메라를 통해 얼굴을 인식해야 합니다. 권한을 허용해 주세요.</string>
+    <string name="permission_button">권한 허용</string>
+    <string name="permission_guide_img_desc">권한 안내 이미지</string>
+
+    <!-- Result Screen -->
+    <string name="measured_face_desc">측정된 얼굴</string>
+    <string name="share_result_title">전투력 공유하기</string>
+
+    <!-- Title Screen -->
+    <string name="title_img_desc">타이틀 이미지</string>
 </resources>

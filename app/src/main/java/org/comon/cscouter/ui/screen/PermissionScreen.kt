@@ -50,7 +50,7 @@ fun PermissionScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.need_camera_permission),
-                contentDescription = "Permission Guide Image",
+                contentDescription = stringResource(R.string.permission_guide_img_desc),
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
@@ -66,7 +66,7 @@ fun PermissionScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "카메라 권한이 필요합니다",
+                    text = stringResource(R.string.permission_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
@@ -75,7 +75,7 @@ fun PermissionScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "전투력을 측정하기 위해서는 카메라를 통해 얼굴을 인식해야 합니다. 권한을 허용해 주세요.",
+                    text = stringResource(R.string.permission_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onBackground
@@ -86,7 +86,7 @@ fun PermissionScreen(
                 Button(
                     onClick = { onRequestPermission() }
                 ) {
-                    Text("권한 허용")
+                    Text(stringResource(R.string.permission_button))
                 }
             }
         }
@@ -99,7 +99,7 @@ fun PermissionScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "카메라 권한이 필요합니다",
+                text = stringResource(R.string.permission_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -108,7 +108,7 @@ fun PermissionScreen(
 
             Image(
                 painter = painterResource(id = R.drawable.need_camera_permission),
-                contentDescription = "Permission Guide Image",
+                contentDescription = stringResource(R.string.permission_guide_img_desc),
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(200.dp)
@@ -117,7 +117,7 @@ fun PermissionScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "전투력을 측정하기 위해서는 카메라를 통해 얼굴을 인식해야 합니다. 권한을 허용해 주세요.",
+                text = stringResource(R.string.permission_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground
@@ -128,7 +128,7 @@ fun PermissionScreen(
             Button(
                 onClick = { onRequestPermission() }
             ) {
-                Text("권한 허용")
+                Text(stringResource(R.string.permission_button))
             }
         }
     }

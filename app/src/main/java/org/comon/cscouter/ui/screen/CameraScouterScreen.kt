@@ -25,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -73,29 +74,29 @@ fun CameraScouterScreen(
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
-            title = { Text("앱 종료") },
-            text = { Text("앱을 종료하시겠습니까?") },
+            title = { Text(stringResource(org.comon.cscouter.R.string.exit_app_title)) },
+            text = { Text(stringResource(org.comon.cscouter.R.string.exit_app_desc)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         (context as? ComponentActivity)?.finish()
                     }
                 ) {
-                    Text("종료")
+                    Text(stringResource(org.comon.cscouter.R.string.exit))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showExitDialog = false }
                 ) {
-                    Text("취소")
+                    Text(stringResource(org.comon.cscouter.R.string.cancel))
                 }
             }
         )
     }
 
     // 첫 실행 시 자동으로 도움말 표시
-    androidx.compose.runtime.LaunchedEffect(isFirstLaunch) {
+    LaunchedEffect(isFirstLaunch) {
         if (isFirstLaunch) {
             showHelpDialog = true
         }
@@ -273,7 +274,7 @@ fun CameraScouterScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
-                    contentDescription = "Help",
+                    contentDescription = stringResource(org.comon.cscouter.R.string.help_icon_desc),
                     tint = MaterialTheme.colorScheme.primaryContainer.copy(alpha=0.8f) // 잘 보이게 색상 조정
                 )
             }

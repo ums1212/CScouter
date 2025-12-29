@@ -28,7 +28,7 @@ fun ResultTitle(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "다음 인물의 전투력은?",
+            text = androidx.compose.ui.res.stringResource(org.comon.cscouter.R.string.result_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -48,7 +48,7 @@ fun PowerValueText(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "전투력",
+            text = androidx.compose.ui.res.stringResource(org.comon.cscouter.R.string.power_label),
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -75,10 +75,10 @@ fun ResultButtonRow(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         OutlinedButton(onClick = onRetryClick) {
-            Text("다시하기")
+            Text(androidx.compose.ui.res.stringResource(org.comon.cscouter.R.string.retry))
         }
         Button(onClick = onShareClick) {
-            Text("공유하기")
+            Text(androidx.compose.ui.res.stringResource(org.comon.cscouter.R.string.share))
         }
     }
 }

@@ -37,7 +37,7 @@ fun TitleScreen(
     ) {
         Image(
             painter = painterResource(id = imageRes),
-            contentDescription = "Title Image",
+            contentDescription = androidx.compose.ui.res.stringResource(org.comon.cscouter.R.string.title_img_desc),
             modifier = Modifier.fillMaxSize()
         )
     }
