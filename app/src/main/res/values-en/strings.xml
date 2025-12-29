@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">CScouter</string>
+    <string name="next">Next</string>
+    <string name="confirm">OK</string>
+
+    <!-- Help Dialog -->
+    <string name="help_intro_title">About CScouter</string>
+    <string name="help_intro_desc">CScouter is an app that measures the combat power of others.</string>
+    <string name="help_usage_title">How to use</string>
+    <string name="help_usage_desc">Point the camera at a face to analyze age, expressions, etc., and calculate combat power.</string>
+    <string name="help_share_title">Share</string>
+    <string name="help_share_desc">Share your combat power with friends and compete.</string>
+
+    <!-- Result Components -->
+    <string name="result_title">What is the combat power of this person?</string>
+    <string name="power_label">Power</string>
+    <string name="retry">Retry</string>
+    <string name="share">Share</string>
+
+    <!-- Camera Scouter Screen -->
+    <string name="exit_app_title">Exit App</string>
+    <string name="exit_app_desc">Are you sure you want to exit?</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
+    <string name="help_icon_desc">Help</string>
+
+    <!-- Permission Screen -->
+    <string name="permission_title">Camera Permission Required</string>
+    <string name="permission_desc">To measure combat power, face recognition through the camera is required. Please allow permission.</string>
+    <string name="permission_button">Allow Permission</string>
+    <string name="permission_guide_img_desc">Permission guide image</string>
+
+    <!-- Result Screen -->
+    <string name="measured_face_desc">Measured face</string>
+    <string name="share_result_title">Share combat power</string>
+
+    <!-- Title Screen -->
+    <string name="title_img_desc">Title image</string>
+</resources>

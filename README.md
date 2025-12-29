@@ -195,4 +195,5 @@ Title Screen → (카메라 권한 체크) → Camera Screen → Result Screen
 - 터치 편의성을 위해 터치 인식 영역을 얼굴 박스의 1.5배로 확장
 - 결과 화면 공유 시 텍스트 대신 화면 전체 스크린샷 이미지 공유 기능 구현
 - 도움말 다이얼로그의 내비게이션 로직 개선 (버튼을 통한 페이지 이동 및 확인 버튼 기능)
-- 모든 UI 문자열을 `strings.xml` 리소스로 추출 및 `stringResource` 사용 (다국어 지원 및 유지보수성 향상)
+- 모든 UI 문자열을 `strings.xml` 리소스로 추출 및 `stringResource` 사용 (유지보수성 향상)
+- 다국어 지원(영문)을 위한 `values-en/strings.xml` 추가 및 번역 적용
